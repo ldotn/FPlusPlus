@@ -6,16 +6,16 @@ namespace fpp
 {
 	namespace imp_
 	{
-		template<typename C0, typename C1>
+		template<typename C0, typename C1, typename C0Iter, typename C0Value, typename C1Iter, typename C1Value>
 		class zip
 		{
 		public:
-			using value_type = typename std::tuple<typename C0::value_type&&, typename C1::value_type&&>;
+			using value_type = typename std::tuple<C0Value&,C1Value&>;
 
 			class InternalIterator
 			{
 			public:
-				InternalIterator(typename  C0::iterator InIterA, typename  C1::iterator InIterB) noexcept
+				InternalIterator(C0Iter InIterA, C1Iter InIterB) noexcept
 					: IterA(InIterA), IterB(InIterB)
 				{
 				}
@@ -39,10 +39,10 @@ namespace fpp
 				// But that's not the behavior you would expect from !=
 				inline bool operator!=(const InternalIterator& rhs) noexcept { return !(IterA == rhs.IterA || IterB == rhs.IterB); }
 
-				value_type operator*() { return value_type(move(*IterA), move(*IterB)); }
+				value_type operator*() { return std::make_tuple(std::ref(*IterA), std::ref(*IterB)); }
 			private:
-				typename C0::iterator IterA;
-				typename C1::iterator IterB;
+				C0Iter IterA;
+				C1Iter IterB;
 			};
 
 			using iterator = InternalIterator;
@@ -53,8 +53,8 @@ namespace fpp
 				Count = std::min({ std::size(a),std::size(b) });
 			}
 
-			InternalIterator begin() noexcept { return InternalIterator(RefA.begin(), RefB.begin()); }
-			InternalIterator end() noexcept { return InternalIterator(RefA.end(), RefB.end()); }
+			InternalIterator begin() noexcept { return InternalIterator(std::begin(RefA), std::begin(RefB)); }
+			InternalIterator end() noexcept { return InternalIterator(std::end(RefA), std::end(RefB)); }
 
 			size_t size() const noexcept { return Count; }
 		private:
@@ -72,5 +72,13 @@ namespace fpp
 	//		b = { 4, 5, 6, 7 }
 	//	zip(a,b) -> (1,4) , (2,5) , (3,6)
 	template<typename C0, typename C1>
-	imp_::zip<C0, C1> zip(C0& a, C1& b) { return imp_::zip<C0, C1>(a, b); }
+	auto zip(C0& a, C1& b) 
+	{ 
+		return imp_::zip
+			<
+				C0, C1, 
+				decltype(std::begin(a)), decltype(*std::begin(a)), 
+				decltype(std::begin(b)), decltype(*std::begin(b))
+			> (a, b); 
+	}
 }

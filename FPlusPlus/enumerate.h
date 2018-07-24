@@ -1,21 +1,22 @@
 #pragma once
 #include <tuple>
 #include <algorithm>
+#include <functional>
 
 namespace fpp
 {
 	namespace imp_
 	{
-		template<typename C>
+		template<typename C,typename CIter,typename CValue>
 		class enumerate
 		{
 		public:
-			using value_type = std::tuple<size_t, typename C::value_type&&>;
+			using value_type = std::tuple<size_t, CValue&>;
 
 			class InternalIterator
 			{
 			public:
-				InternalIterator(typename C::iterator InIter) noexcept
+				InternalIterator(CIter InIter) noexcept
 					: Iter(InIter)
 				{
 					Index = 0;
@@ -36,10 +37,10 @@ namespace fpp
 
 				inline bool operator!=(const InternalIterator& rhs) noexcept { return !(Iter == rhs.Iter); }
 
-				value_type operator*() { return value_type(Index, move(*Iter)); }
+				value_type operator*() { return std::make_tuple(Index, std::ref(*Iter)); }
 			private:
 				size_t Index;
-				typename C::iterator Iter;
+				CIter Iter;
 			};
 
 			using iterator = InternalIterator;
@@ -50,8 +51,8 @@ namespace fpp
 				Count = std::size(v);
 			}
 
-			InternalIterator begin() noexcept { return InternalIterator(Ref.begin()); }
-			InternalIterator end() noexcept { return InternalIterator(Ref.end()); }
+			InternalIterator begin() noexcept { return InternalIterator(std::begin(Ref)); }
+			InternalIterator end() noexcept { return InternalIterator(std::end(Ref)); }
 
 			size_t size() const noexcept { return Count; }
 		private:
@@ -60,11 +61,11 @@ namespace fpp
 		};
 	}
 	
-	// Allows to iterate an std container and get the current index
+	// Allows to iterate an std container or C array and get the current index
 	// Returns a tuple with the index and a reference to the value
 	// For example
 	//		a = { "a", "b", "c" }
 	//		enumerate(a) 
 	template<typename C>
-	imp_::enumerate<C> enumerate(C& v) { return imp_::enumerate<C>(v); }
+	auto enumerate(C& v) { return imp_::enumerate<C,decltype(std::begin(v)),decltype(*std::begin(v))>(v); }
 }
