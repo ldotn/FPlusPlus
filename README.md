@@ -7,3 +7,6 @@ It add things from functional programming that act mostly as syntactic sugar, tr
 * Enumerate
 
 For now the functions can't be concatenated, that is, you can't call *enumerate(zip(a,b))*
+
+### Stuff
+It now has some SIMD vector functions and image manipulation stuff, not because it's related but because I needed a place to put them

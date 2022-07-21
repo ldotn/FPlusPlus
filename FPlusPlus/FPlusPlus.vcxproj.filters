@@ -26,5 +26,20 @@
     <ClInclude Include="enumerate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="float2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="float3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="float4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="int2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
