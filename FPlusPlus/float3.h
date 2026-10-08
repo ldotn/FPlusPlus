@@ -29,7 +29,7 @@ public:
 		mem = _mm_xor_ps(mem, mem);
 		x = _x; y = _y; z = _z;
 	}
-	float3(float4 v) { x = v.x; y = v.y; z = v.z; }
+	float3(float4 v) { mem = _mm_xor_ps(mem, mem); x = v.x; y = v.y; z = v.z; }
 
 	inline bool operator==(const float3& rhs) { return (x == rhs.x) && (y == rhs.y) && (z == rhs.z); }
 	inline bool operator!=(const float3& rhs) { return !(*this == rhs); }
